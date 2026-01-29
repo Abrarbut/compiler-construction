@@ -1,16 +1,3 @@
-int main() {
-    int a = 10;
-    float b = 20.5;
+#include <stdio.h>
 
-    if (a < b) {
-        a++;
-    }
-
-    // single line comment
-
-    /*
-        multi line comment
-    */
-
-    return 0;
-}
+#define PI 3.141
