@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <cctype>
 using namespace std;
 
 string keywords[] = {
@@ -10,61 +9,73 @@ string keywords[] = {
     "short","static","struct","switch","void","while"
 };
 
+bool isLetter(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+bool isDigit(char c) {
+    return (c >= '0' && c <= '9');
+}
+
+bool isWhitespace(char c) {
+    return c == ' ' || c == '\n' || c == '\t';
+}
+
 bool isKeyword(string word) {
-    for (int i = 0; i < 23; i++) {
+    for (int i = 0; i < 23; i++)
         if (keywords[i] == word)
             return true;
-    }
     return false;
 }
 
 bool isIdentifier(string word) {
-    if (!(isalpha(word[0]) || word[0] == '_'))
+    if (!(isLetter(word[0]) || word[0] == '_'))
         return false;
 
     for (int i = 1; i < word.length(); i++) {
-        if (!(isalnum(word[i]) || word[i] == '_'))
+        if (!(isLetter(word[i]) || isDigit(word[i]) || word[i] == '_'))
             return false;
     }
     return true;
 }
 
 bool isNumber(string word) {
-    bool hasDot = false;
+    int dotCount = 0;
 
     for (int i = 0; i < word.length(); i++) {
         if (word[i] == '.') {
-            if (hasDot)
+            dotCount++;
+            if (dotCount > 1)
                 return false;
-            hasDot = true;
         }
-        else if (!isdigit(word[i]))
+        else if (!isDigit(word[i]))
             return false;
     }
     return true;
 }
 
 bool isOperator(string s) {
-    string ops[] = {"+","-","*","/","%","++","--","==","!=",
-                    ">","<",">=","<="};
-    for (int i = 0; i < 13; i++) {
+    string ops[] = {"+","-","*","/","%","++","--",
+                    "==","!=","<",">","<=",">="};
+
+    for (int i = 0; i < 13; i++)
         if (ops[i] == s)
             return true;
-    }
     return false;
 }
 
 bool isPunctuator(char c) {
-    char punctuators[] = {'{','}','(',')','[',']','=',';',',','.',':'};
-    for (int i = 0; i < 11; i++) {
-        if (punctuators[i] == c)
+    char p[] = {'{','}','(',')','[',']','=',';',',','.',':'};
+
+    for (int i = 0; i < 11; i++)
+        if (p[i] == c)
             return true;
-    }
     return false;
 }
 
 string removeComments(string code) {
     string result = "";
+
     for (int i = 0; i < code.length(); i++) {
 
         if (code[i] == '/' && code[i+1] == '/') {
@@ -75,7 +86,7 @@ string removeComments(string code) {
         else if (code[i] == '/' && code[i+1] == '*') {
             i += 2;
             while (i < code.length() &&
-                   !(code[i] == '*' && code[i+1] == '/'))
+                  !(code[i] == '*' && code[i+1] == '/'))
                 i++;
             i++;
         }
@@ -84,6 +95,7 @@ string removeComments(string code) {
             result += code[i];
         }
     }
+
     return result;
 }
 
@@ -108,13 +120,13 @@ int main() {
 
     for (int i = 0; i < code.length(); i++) {
 
-        if (isspace(code[i]))
+        if (isWhitespace(code[i]))
             continue;
 
-        // IDENTIFIER or KEYWORD
-        if (isalpha(code[i]) || code[i] == '_') {
+        if (isLetter(code[i]) || code[i] == '_') {
             string word = "";
-            while (isalnum(code[i]) || code[i] == '_') {
+
+            while (isLetter(code[i]) || isDigit(code[i]) || code[i] == '_') {
                 word += code[i];
                 i++;
             }
@@ -126,10 +138,10 @@ int main() {
                 cout << "Identifier : " << word << endl;
         }
 
-        // NUMBER
-        else if (isdigit(code[i])) {
+        else if (isDigit(code[i])) {
             string num = "";
-            while (isdigit(code[i]) || code[i] == '.') {
+
+            while (isDigit(code[i]) || code[i] == '.') {
                 num += code[i];
                 i++;
             }
@@ -138,22 +150,27 @@ int main() {
             cout << "Number : " << num << endl;
         }
 
-        // OPERATOR (check 2-character first)
-        else if (i+1 < code.length()) {
-            string twoChar = "";
-            twoChar += code[i];
-            twoChar += code[i+1];
+        else {
+            if (i+1 < code.length()) {
+                string two = "";
+                two += code[i];
+                two += code[i+1];
 
-            if (isOperator(twoChar)) {
-                cout << "Operator : " << twoChar << endl;
-                i++;
+                if (isOperator(two)) {
+                    cout << "Operator : " << two << endl;
+                    i++;
+                    continue;
+                }
             }
-            else if (isOperator(string(1, code[i]))) {
-                cout << "Operator : " << code[i] << endl;
-            }
-            else if (isPunctuator(code[i])) {
+
+            string one = "";
+            one += code[i];
+
+            if (isOperator(one))
+                cout << "Operator : " << one << endl;
+
+            else if (isPunctuator(code[i]))
                 cout << "Punctuator : " << code[i] << endl;
-            }
         }
     }
 

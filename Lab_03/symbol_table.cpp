@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <cctype>
 using namespace std;
 
 struct Symbol {
@@ -10,7 +9,7 @@ struct Symbol {
 };
 
 Symbol table[1000];
-int indexTable = 0;
+int tableIndex = 0;
 
 string keywords[] = {
     "break","case","char","const","continue","default",
@@ -18,6 +17,18 @@ string keywords[] = {
     "goto","if","int","long","return",
     "short","static","struct","switch","void","while"
 };
+
+bool isLetter(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+bool isDigit(char c) {
+    return (c >= '0' && c <= '9');
+}
+
+bool isWhitespace(char c) {
+    return c == ' ' || c == '\n' || c == '\t';
+}
 
 bool isKeyword(string word) {
     for (int i = 0; i < 23; i++)
@@ -34,14 +45,15 @@ int generateHash(string word) {
 }
 
 void insert(string name, string value) {
-    table[indexTable].tokenName = name;
-    table[indexTable].tokenValue = value;
-    table[indexTable].hashValue = generateHash(value);
-    indexTable++;
+    table[tableIndex].tokenName = name;
+    table[tableIndex].tokenValue = value;
+    table[tableIndex].hashValue = generateHash(value);
+    tableIndex++;
 }
 
 string removeComments(string code) {
     string result = "";
+
     for (int i = 0; i < code.length(); i++) {
 
         if (code[i] == '/' && code[i+1] == '/') {
@@ -52,7 +64,7 @@ string removeComments(string code) {
         else if (code[i] == '/' && code[i+1] == '*') {
             i += 2;
             while (i < code.length() &&
-                   !(code[i] == '*' && code[i+1] == '/'))
+                  !(code[i] == '*' && code[i+1] == '/'))
                 i++;
             i++;
         }
@@ -61,6 +73,7 @@ string removeComments(string code) {
             result += code[i];
         }
     }
+
     return result;
 }
 
@@ -83,12 +96,13 @@ int main() {
 
     for (int i = 0; i < code.length(); i++) {
 
-        if (isspace(code[i]))
+        if (isWhitespace(code[i]))
             continue;
 
-        if (isalpha(code[i]) || code[i] == '_') {
+        if (isLetter(code[i]) || code[i] == '_') {
             string word = "";
-            while (isalnum(code[i]) || code[i] == '_') {
+
+            while (isLetter(code[i]) || isDigit(code[i]) || code[i] == '_') {
                 word += code[i];
                 i++;
             }
@@ -100,26 +114,29 @@ int main() {
                 insert("Identifier", word);
         }
 
-        else if (isdigit(code[i])) {
+        else if (isDigit(code[i])) {
             string num = "";
-            while (isdigit(code[i]) || code[i] == '.') {
+
+            while (isDigit(code[i]) || code[i] == '.') {
                 num += code[i];
                 i++;
             }
             i--;
+
             insert("Number", num);
         }
 
         else {
-            string op(1, code[i]);
-            insert("Symbol", op);
+            string sym = "";
+            sym += code[i];
+            insert("Symbol", sym);
         }
     }
 
     cout << "Token Name\tToken Value\tHash Value\n";
-    cout << "---------------------------------------------\n";
+    cout << "-------------------------------------------\n";
 
-    for (int i = 0; i < indexTable; i++) {
+    for (int i = 0; i < tableIndex; i++) {
         cout << table[i].tokenName << "\t\t"
              << table[i].tokenValue << "\t\t"
              << table[i].hashValue << endl;
