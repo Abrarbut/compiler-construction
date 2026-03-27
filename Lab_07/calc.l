@@ -9,7 +9,7 @@ void yyerror(const char *s);
 
 %%
 
-[ \t\r]+            { /* discard spaces/tabs/CR */ }
+[ \t\r]+             { /* discard spaces/tabs/CR */ }
 "\n"                { return '\n'; }
 
 [0-9]+\.[0-9]+      { yylval.dval = strtod(yytext, NULL); return NUMBER; }
