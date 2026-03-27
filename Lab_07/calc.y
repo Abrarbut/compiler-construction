@@ -81,9 +81,11 @@ void yyerror(const char *s) {
 }
 
 int main(void) {
+    
     printf("Arithmetic Expression Evaluator\n");
     printf("Supports: +  -  *  /  ^  log(x)  exp(x)\n");
     printf("Enter expressions (Ctrl+D to quit):\n\n");
+    
     yyparse();
     return 0;
 }
