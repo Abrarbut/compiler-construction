@@ -1,0 +1,33 @@
+
+=== Grammar Productions ===
+   1. E -> T E'
+   2. E' -> + T E'
+   3. E' -> - T E'
+   4. E' -> eps
+   5. T -> F T'
+   6. T' -> * F T'
+   7. T' -> / F T'
+   8. T' -> eps
+   9. F -> ( E )
+  10. F -> id
+  11. F -> num
+
+=== FIRST and FOLLOW Sets ===
+NT         Nullable   FIRST                          FOLLOW                        
+---------- ---------- ------------------------------ ------------------------------
+E          No         { (, id, num }                  { $, ) }
+E'         Yes        { +, -, eps }                   { $, ) }
+T          No         { (, id, num }                  { +, -, $, ) }
+T'         Yes        { *, /, eps }                   { +, -, $, ) }
+F          No         { (, id, num }                  { *, /, +, -, $, ) }
+
+=== LL(1) Parsing Table ===
+NT       +          -          *          /          (          )          id         num        $         
+-------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
+E        error      error      error      error      1:E->TE'   error      1:E->TE'   1:E->TE'   error     
+E'       2:E'->+TE' 3:E'->-TE' error      error      error      4:E'->eps  error      error      4:E'->eps 
+T        error      error      error      error      5:T->FT'   error      5:T->FT'   5:T->FT'   error     
+T'       8:T'->eps  8:T'->eps  6:T'->*FT' 7:T'->/FT' error      8:T'->eps  error      error      8:T'->eps 
+F        error      error      error      error      9:F->(E)   error      10:F->id   11:F->num  error     
+
+[Done]
