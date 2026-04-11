@@ -1,0 +1,34 @@
++==========================================+
+|  Lab 09 - Task 1: Type Checking & Casting |
++==========================================+
+
+--- Symbol Table ---------------------------
+  Name    Type    Value
+  a       int     42
+  b       float   9.8100
+  c       char    'Z'
+
+--- Type Checking --------------------------
+  Assigning a     (int) = a     (int)  -->  PASSED
+  Assigning a     (int) = c     (char)  -->  PASSED
+  Assigning a     (int) = b     (float)  -->  TYPE ERROR: incompatible types (explicit cast required)
+  Assigning b     (float) = a     (int)  -->  TYPE ERROR: incompatible types (explicit cast required)
+
+--- Type Casting ---------------------------
+(1) float -> int:
+  [Cast] float 9.8100  -->  int 9  (fractional part truncated)
+      Result: int b = 9
+
+(2) int -> float:
+  [Cast] int 42  -->  float 42.0000
+      Result: float a = 42.0000
+
+(3) char -> int:
+  [Cast] char 'Z' (ASCII 90)  -->  int 90
+      Result: int c = 90
+
+(4) int -> char:
+  [Cast] int 42  -->  char '*'
+      Result: char a = '*'
+
+--- End of Task 1 --------------------------
