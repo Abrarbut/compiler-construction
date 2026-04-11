@@ -1,0 +1,61 @@
++==========================================+
+|  Lab 09 - Task 2: Scope Checker           |
+|  (Scanner + Parser + Scoped Symbol Table) |
++==========================================+
+
+--- Input Source Code ----------------------
+// Global variable declaration
+int g = 20;
+
+int main() {
+    // Local variable declaration
+    int g = 10;
+    cout << g;
+    return 0;
+}
+
+--- Step 1: Scanning (Tokenisation) --------
+--- Token Stream ---------------------------
+  Line  Type          Lexeme
+  1     INT           "int"
+  2     IDENT         "g"
+  2     ASSIGN        "="
+  2     NUMBER        "20"
+  2     SEMICOLON     ";"
+  2     INT           "int"
+  4     IDENT         "main"
+  4     LPAREN        "("
+  4     RPAREN        ")"
+  4     LBRACE        "{"
+  4     INT           "int"
+  6     IDENT         "g"
+  6     ASSIGN        "="
+  6     NUMBER        "10"
+  6     SEMICOLON     ";"
+  6     COUT          "cout"
+  7     LSHIFT        "<<"
+  7     IDENT         "g"
+  7     SEMICOLON     ";"
+  7     RETURN        "return"
+  8     NUMBER        "0"
+  8     SEMICOLON     ";"
+  8     RBRACE        "}"
+  9     EOF           "EOF"
+
+--- Step 2: Parsing & Scope Analysis -------
+  [Scope] >>> Enter scope: "global"
+  [Declare] int    g      = 20      (scope: "global")
+  [Scope] >>> Enter scope: "main"
+  [Declare] int    g      = 10      (scope: "main")
+  [cout] "g" resolved to value = 10  (from scope "main")
+         (declared in scope "main")
+  [Scope] <<< Exit  scope: "main"
+  [Scope] <<< Exit  scope: "global"
+
+--- Scope Check Result ---------------------
+  Global  : int g = 20
+  Local   : int g = 10  (inside main)
+  Output  : cout << g  -->  10
+  Reason  : Local variable shadows global variable.
+            Innermost scope takes precedence.
+--- End of Task 2 --------------------------
