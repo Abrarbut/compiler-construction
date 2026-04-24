@@ -1,0 +1,161 @@
+====================================================
+ CS-346 Lab 11 : Code & Loop Optimization
+ GitHub: https://github.com/Abrarbut/compiler-construction
+====================================================
+
+=== LEXER OUTPUT ===
+  [ KEYWORD] int
+  [   IDENT] compute
+  [   PAREN] (
+  [ KEYWORD] int
+  [   IDENT] a
+  [   PAREN] )
+  [   BRACE] {
+  [ KEYWORD] int
+  [   IDENT] x
+  [  ASSIGN] =
+  [  NUMBER] 3
+  [      OP] +
+  [  NUMBER] 4
+  [    SEMI] ;
+  [ KEYWORD] int
+  [   IDENT] y
+  [  ASSIGN] =
+  [   IDENT] x
+  [      OP] *
+  [  NUMBER] 1
+  [    SEMI] ;
+  [ KEYWORD] int
+  [   IDENT] z
+  [  ASSIGN] =
+  [   IDENT] y
+  [      OP] +
+  [  NUMBER] 0
+  [    SEMI] ;
+  [ KEYWORD] int
+  [   IDENT] w
+  [  ASSIGN] =
+  [   IDENT] z
+  [      OP] *
+  [  NUMBER] 2
+  [    SEMI] ;
+  [ KEYWORD] int
+  [   IDENT] t
+  [  ASSIGN] =
+  [   IDENT] z
+  [      OP] *
+  [  NUMBER] 2
+  [    SEMI] ;
+  [ KEYWORD] return
+  [   IDENT] t
+  [    SEMI] ;
+  [ KEYWORD] int
+  [   IDENT] dead
+  [  ASSIGN] =
+  [  NUMBER] 99
+  [    SEMI] ;
+  [   BRACE] }
+
+=== TASK 2: UNOPTIMIZED IR ===
+  t1 = 3 + 4
+  x = t1
+  t2 = x * 1
+  y = t2
+  t3 = y + 0
+  z = t3
+  t4 = z * 2
+  w = t4
+  t5 = z * 2
+  t = t5
+  return t
+  dead = 99
+
+[Optimizer] Applying Constant Folding...
+[Optimizer] Applying Constant Propagation...
+[Optimizer] Applying Algebraic Simplification...
+[Optimizer] Applying CSE...
+
+=== TASK 3: IR AFTER OPTIMIZATION (CF + CP + AS + CSE) ===
+  t1 = 7
+  x = 7
+  t2 = 7
+  y = t2
+  t3 = y
+  z = t3
+  t4 = z * 2
+  w = t4
+  t5 = t4
+  t = t5
+  return t
+  dead = 99
+
+
+=== TASK 4: DEAD CODE ELIMINATION ===
+  [Dead Code Eliminated]: dead = 99
+  [Dead Var Eliminated]: t1 = 7
+
+=== TASK 4: IR AFTER DEAD CODE ELIMINATION ===
+  x = 7
+  t2 = 7
+  y = t2
+  t3 = y
+  z = t3
+  t4 = z * 2
+  w = t4
+  t5 = t4
+  t = t5
+  return t
+
+
+=== TASK 5: LOOP IR (BEFORE OPTIMIZATION) ===
+  t1 = 10 * 2
+  base = t1
+  LOOP_BEGIN LOOP_1
+  i = 0
+  t2 = sum + i
+  sum = t2
+  t3 = base * 3
+  stride = t3
+  LOOP_END LOOP_1
+  LOOP_BEGIN LOOP_1
+  j = 0
+  t4 = total + j
+  total = t4
+  LOOP_END LOOP_1
+  return sum
+
+
+=== TASK 5a: LOOP INVARIANT CODE MOTION ===
+  [LICM Hoisted]: t3 = base * 3
+
+=== TASK 5b: LOOP FUSION ===
+  [Loop Fusion]: Merging LOOP_1 and LOOP_1
+
+=== TASK 5c: STRENGTH REDUCTION ===
+  [Strength Reduction]: mul->add for t1
+
+=== TASK 5: LOOP IR (AFTER OPTIMIZATION) ===
+  t1 = 10 + 10
+  base = t1
+  t3 = base * 3
+  LOOP_BEGIN LOOP_1_FUSED
+  i = 0
+  t2 = sum + i
+  sum = t2
+  stride = t3
+  j = 0
+  t4 = total + j
+  total = t4
+  LOOP_END LOOP_1_FUSED
+  return sum
+
+
+=== TASK 6: EXECUTION TIME COMPARISON ===
+  Unoptimized avg time : 112.948 ms
+  Optimized   avg time : 214.444 ms
+  Speedup              : 0.527x
+  (Both produce sum = 2499999950000000)
+
+====================================================
+ Lab 11 Complete.
+====================================================
